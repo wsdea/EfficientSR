@@ -1,0 +1,6 @@
+Challenge files
+logs
+submissions
+*.png
+start_tensorboard.bat
+*.pyc
