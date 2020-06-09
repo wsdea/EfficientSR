@@ -28,8 +28,11 @@ class Trainer(DefaultTrainer):
  ############################################################################################ Datasets
 
 if __name__ == "__main__":
-    LR_val_folder = r"D:\ML\SR dataset\DIV2K\DIV2K_valid_LR_bicubic\X4"
-    HR_val_folder = r"D:\ML\SR dataset\DIV2K\DIV2K_val_HR"
+    data_folder = "data"
+    data_folder = "D:/ML/SR dataset"
+
+    LR_val_folder = data_folder + "/DIV2K/DIV2K_valid_LR_bicubic/X4"
+    HR_val_folder = data_folder + "/DIV2K/DIV2K_val_HR"
 
 
     baseline_ckpt = os.path.join('Challenge files',
@@ -37,25 +40,19 @@ if __name__ == "__main__":
                                  'MSRResNetx4_model',
                                  'MSRResNetx4.pth')
 
-#    model_fun = baseline_model
+    model_fun = baseline_model
 #    model_fun = FasterMSRResNet
 #    model_fun = small_baseline_model
-    model_fun = MyModel_debug
+#    model_fun = MyModel_debug
 
-    def lr_lambda(iteration_steps):
-        if iteration_steps < 5:
-            return 1/5
-        else:
-            return 1
-
-    t = Trainer(model_fun)
+    t = Trainer(model_fun, data_folder=data_folder)
 
 #    t.model.load_weights(baseline_ckpt)
 
 
     RETRAIN = 1
     if RETRAIN:
-        n_iterations = 100000
+        n_iterations = 1000000
         t.train(n_iterations)
 
     else:

@@ -9,7 +9,7 @@ from torch.utils.tensorboard import SummaryWriter
 from torch.nn.functional import l1_loss
 
 from ..dataset.torch_dataset import RandomCropDataset, ValDataset
-from ..preprocessing.utils   import uint8_to_float32, float32_to_uint8
+from ..preprocessing.utils   import uint8_to_float32
 from ..evaluation.eval       import fast_PSNR
 
 class ModelCheckpoint:
@@ -49,14 +49,16 @@ class DefaultTrainer:
                  lr=2e-4,
                  batch_size=16,
                  iterations_step=500,
-                 lr_lambda=None):
+                 lr_lambda=None,
+                 data_folder="data"):
         self.tqdm = None
         self.R = 4
         self.batch_size = batch_size
+        self.data_folder = data_folder
 
         # dataset
         self.set_crop_size(48)
-        self.val_dataset   = ValDataset()
+        self.val_dataset   = ValDataset(self.data_folder)
 
         self.set_loading_threads(1)
 
@@ -102,7 +104,8 @@ class DefaultTrainer:
         self.crop_size = size
         self.train_dataset = RandomCropDataset(self.batch_size,
                                                self.R,
-                                               self.crop_size)
+                                               self.crop_size,
+                                               data_folder=self.data_folder)
 
     def set_loading_threads(self, threads):
         self.loading_threads = threads

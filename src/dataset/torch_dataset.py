@@ -9,18 +9,18 @@ from skimage.util.shape import view_as_windows
 from ..preprocessing.utils import uint8_to_float32
 
 class RandomCropDataset(torch.utils.data.Dataset):
-    def __init__(self, batch_size, R, lr_crop_size):
+    def __init__(self, batch_size, R, lr_crop_size, data_folder='data'):
 
         self.DIV2K = {}
-        self.DIV2K['base_folder'] = r"D:\ML\SR dataset\DIV2K"
-        self.DIV2K['HR_folder'] = os.path.join(self.DIV2K['base_folder'], r"DIV2K_train_HR")
-        self.DIV2K['LR_folder'] = os.path.join(self.DIV2K['base_folder'], r"DIV2K_train_LR_bicubic\X4")
+        self.DIV2K['base_folder'] = "{}/DIV2K".format(data_folder)
+        self.DIV2K['HR_folder'] = os.path.join(self.DIV2K['base_folder'], "DIV2K_train_HR")
+        self.DIV2K['LR_folder'] = os.path.join(self.DIV2K['base_folder'], "DIV2K_train_LR_bicubic/X4")
         self.DIV2K['im_list'] = os.listdir(self.DIV2K['HR_folder'])
 
         self.Flickr2K = {}
-        self.Flickr2K['base_folder'] = r"D:\ML\SR dataset\Flickr2K"
-        self.Flickr2K['HR_folder'] = os.path.join(self.Flickr2K['base_folder'], r"Flickr2K_HR")
-        self.Flickr2K['LR_folder'] = os.path.join(self.Flickr2K['base_folder'], r"Flickr2K_LR_bicubic\X4")
+        self.Flickr2K['base_folder'] = "{}/Flickr2K".format(data_folder)
+        self.Flickr2K['HR_folder'] = os.path.join(self.Flickr2K['base_folder'], "Flickr2K_HR")
+        self.Flickr2K['LR_folder'] = os.path.join(self.Flickr2K['base_folder'], "Flickr2K_LR_bicubic/X4")
         self.Flickr2K['im_list'] = os.listdir(self.Flickr2K['HR_folder'])
 
         self.R = R
@@ -91,7 +91,7 @@ class RandomCropDataset(torch.utils.data.Dataset):
 
 
 class ValDataset(torch.utils.data.Dataset):
-    def __init__(self):
+    def __init__(self, data_folder="data"):
         self.im_list = [
                       '0808.png',
                       '0809.png',
@@ -107,9 +107,9 @@ class ValDataset(torch.utils.data.Dataset):
 
         self.n = len(self.im_list)
 
-        self.base_folder = r"D:\ML\SR dataset\DIV2K"
-        self.HR_folder = os.path.join(self.base_folder, r"DIV2K_val_HR")
-        self.LR_folder = os.path.join(self.base_folder, r"DIV2K_valid_LR_bicubic\X4")
+        self.base_folder = "{}/DIV2K".format(data_folder)
+        self.HR_folder = os.path.join(self.base_folder, "DIV2K_val_HR")
+        self.LR_folder = os.path.join(self.base_folder, "DIV2K_valid_LR_bicubic/X4")
 
         self.hr_shape = None
 
