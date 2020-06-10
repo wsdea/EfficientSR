@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from .modules  import RRDB, ConvReluConv, Upscalex4V2, ResidualDenseBlock_3C, UpsamplingBlockx4
+from .modules  import RRDB, ConvReluConv, baseline_upscale, ResidualDenseBlock_3C, UpsamplingBlockx4, UpsamplingBlockx4V2
 from .utils    import make_layer, initialize_weights
 from .SRResNet import MSRResNet
 
@@ -74,13 +74,13 @@ class FasterMSRResNet(CustomModule):
         self.Y_first_conv  = nn.Conv2d(1, nf, 3, 1, 1, bias=True)
         CRC = functools.partial(ConvReluConv, nf=nf)
         self.Y_CRC_trunk = make_layer(CRC, nb)
-        self.Y_up  = Upscalex4V2(nf)
+        self.Y_up  = baseline_upscale(nf)
         self.Y_HRconv = nn.Conv2d(nf, nf, 3, 1, 1, bias=True)
         self.Y_conv_last = nn.Conv2d(nf, 1, 3, 1, 1, bias=True)
 
         #UV branch
         self.UV_first_conv = nn.Conv2d(2, nf, 3, 1, 1, bias=True)
-        self.UV_up  = Upscalex4V2(nf)
+        self.UV_up  = baseline_upscale(nf)
         self.UV_HRconv = nn.Conv2d(nf, nf, 3, 1, 1, bias=True)
         self.UV_conv_last = nn.Conv2d(nf, 2, 3, 1, 1, bias=True)
 
@@ -212,3 +212,36 @@ class MyModel_debug(CustomModule):
 
         return out3
 
+class MyModel_debug_other_up(CustomModule):
+    def __init__(self, in_c=3, out_c=3, nf=64, nb=6, bias=True):
+        super(MyModel_debug_other_up, self).__init__()
+        self.name = "MyModel_debug_other_up_{}_{}".format(nf, nb)
+
+        self.bilin_layer = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=False)
+        self.first_conv = nn.Conv2d(in_c, nf, 3, 1, 1, bias=bias)
+        CRC = functools.partial(ConvReluConv, nf=nf)
+        self.block1 = make_layer(CRC, nb)
+        self.block2 = make_layer(CRC, nb)
+        self.block3 = make_layer(CRC, nb)
+        self.up1 = UpsamplingBlockx4V2(nf, bias=bias)
+        self.up2 = UpsamplingBlockx4V2(nf, bias=bias)
+        self.up3 = UpsamplingBlockx4V2(nf, bias=bias)
+
+        # initialization
+        initialize_weights([self.first_conv], 0.1)
+
+    def forward(self, inputs):
+        bilin = self.bilin_layer(inputs)
+
+        x = self.first_conv(inputs) #no relu
+
+        x = self.block1(x)
+        out1 = self.up1(x) + bilin
+
+        x = self.block2(x)
+        out2 = self.up2(x) + out1
+
+        x = self.block3(x)
+        out3 = self.up3(x) + out2
+
+        return out3

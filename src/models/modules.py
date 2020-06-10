@@ -90,7 +90,7 @@ class ConvReluConv(nn.Module):
         return identity + out
 
 class UpsamplingBlockx4(nn.Module):
-    def __init__(self, in_nf, bias, custom_init=False):
+    def __init__(self, in_nf, bias=True):
         super(UpsamplingBlockx4, self).__init__()
         if in_nf < 3*16:
             raise Exception('in_nf < 48')
@@ -118,9 +118,40 @@ class UpsamplingBlockx4(nn.Module):
         #no need for another conv
         return x
 
-class Upscalex4V2(nn.Module):
+class UpsamplingBlockx4V2(nn.Module):
+    def __init__(self, nf, bias=True):
+        super(UpsamplingBlockx4V2, self).__init__()
+        if nf != 64:
+            raise Exception('Expected to have nf = 64')
+
+        self.conv0 = nn.Conv2d(nf, nf, 3, 1, 1, bias=bias)
+        self.conv1 = nn.Conv2d(nf//4, nf//4, 1, 1, 0, bias=bias)
+        self.conv2 = nn.Conv2d(nf//16, 3, 1, 1, 0, bias=bias)
+        self.relu = nn.ReLU(inplace=True)
+
+        self.pixShuffle = nn.PixelShuffle(2)
+
+        # initialization
+        initialize_weights([self.conv0,
+                            self.conv1,
+                            self.conv2], 0.1)
+
+    def forward(self, x):
+
+        x = self.conv0(x)
+        x = self.relu(x)
+
+        x = self.pixShuffle(x)
+        x = self.conv1(x)
+
+        x = self.pixShuffle(x)
+        x = self.conv2(x)
+        #no need for another conv
+        return x
+
+class baseline_upscale(nn.Module):
     def __init__(self, nf):
-        super(Upscalex4V2, self).__init__()
+        super(baseline_upscale, self).__init__()
 
         # upsampling
         self.upconv1 = nn.Conv2d(nf, nf * 4, 3, 1, 1, bias=True)
@@ -159,40 +190,6 @@ class NearestNeighbourx4(nn.Module):
         x = self.relu(self.conv2(x))
 
         return x
-
-
-
-
-#class MyModel_debug_0_1(SR_Model):
-#    def __init__(self, in_c, out_c, nf, n_blocks, n_CRC, bias=False, custom_init=False):
-#        super(MyModel_debug, self).__init__()
-#        self.name = "MyNet_debug_{}_{}_{}".format(nf, n_blocks, n_CRC)
-#
-#        self.first_conv = nn.Conv2d(in_c, nf, 3, 1, 1, bias=bias)
-#        self.block1 = ResidualDenseBlock_5C(nf=64, gc=32, bias=True, learnable_coef=False)
-#        self.up = UpsamplingBlockx4(nf, bias=bias)
-#
-#        # initialization
-#        if custom_init:
-#            for conv in [self.first_conv]:
-#                torch.nn.init.kaiming_normal_(conv.weight)
-#
-#    def forward(self, inputs):
-#
-#        x = self.first_conv(inputs) #no relu
-#        x = self.block1(x)
-#        x = self.up(x)
-#
-#        return x
-
-
-
-
-
-
-
-
-
 
 
 

@@ -8,7 +8,14 @@ import torch
 from src.training.Torch_utils  import DefaultTrainer
 from src.evaluation.submission import save_submission
 from src.evaluation.eval       import sub_PSNR
-from src.models.models         import small_ESRGAN, baseline_model, FasterMSRResNet, MyModel_debug, small_baseline_model
+from src.models.models         import (
+                                      small_ESRGAN,
+                                      baseline_model,
+                                      FasterMSRResNet,
+                                      MyModel_debug,
+                                      MyModel_debug_other_up,
+                                      small_baseline_model,
+                                      )
 #from src.models.SRResNet       import MSRResNet
 from src.dataset.loading       import image_list, im_show
 
@@ -29,7 +36,7 @@ class Trainer(DefaultTrainer):
 
 if __name__ == "__main__":
     data_folder = "data"
-    data_folder = "D:/ML/SR dataset"
+#    data_folder = "D:/ML/SR dataset"
 
     LR_val_folder = data_folder + "/DIV2K/DIV2K_valid_LR_bicubic/X4"
     HR_val_folder = data_folder + "/DIV2K/DIV2K_val_HR"
@@ -43,16 +50,15 @@ if __name__ == "__main__":
 #    model_fun = baseline_model
 #    model_fun = FasterMSRResNet
 #    model_fun = small_baseline_model
-    model_fun = MyModel_debug
+    model_fun = MyModel_debug_other_up
 
     t = Trainer(model_fun, data_folder=data_folder)
 
 #    t.model.load_weights(baseline_ckpt)
 
-
     RETRAIN = 1
     if RETRAIN:
-        n_iterations = 1000000
+        n_iterations = 200000
         t.train(n_iterations)
 
     else:
