@@ -40,10 +40,10 @@ if __name__ == "__main__":
                                  'MSRResNetx4_model',
                                  'MSRResNetx4.pth')
 
-    model_fun = baseline_model
+#    model_fun = baseline_model
 #    model_fun = FasterMSRResNet
 #    model_fun = small_baseline_model
-#    model_fun = MyModel_debug
+    model_fun = MyModel_debug
 
     t = Trainer(model_fun, data_folder=data_folder)
 

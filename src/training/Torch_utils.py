@@ -48,7 +48,7 @@ class DefaultTrainer:
                  device=None,
                  lr=2e-4,
                  batch_size=16,
-                 iterations_step=500,
+                 iterations_step=1000,
                  lr_lambda=None,
                  data_folder="data"):
         self.tqdm = None

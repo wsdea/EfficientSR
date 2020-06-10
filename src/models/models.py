@@ -179,9 +179,9 @@ class baseline_model(MSRResNet, CustomModule):
 
 
 class MyModel_debug(CustomModule):
-    def __init__(self, in_c=3, out_c=3, nf=64, nb=3, bias=True):
+    def __init__(self, in_c=3, out_c=3, nf=64, nb=6, bias=True):
         super(MyModel_debug, self).__init__()
-        self.name = "MyNet_debug_{}".format(nf)
+        self.name = "MyNet_debug_{}_{}".format(nf, nb)
 
         self.bilin_layer = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=False)
         self.first_conv = nn.Conv2d(in_c, nf, 3, 1, 1, bias=bias)
