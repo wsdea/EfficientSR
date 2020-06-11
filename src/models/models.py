@@ -249,7 +249,7 @@ class MyModel_debug_other_up(CustomModule):
 class MyModel_debug_baseline_up(CustomModule):
     def __init__(self, in_c=3, out_c=3, nf=64, nb=3, bias=True):
         super(MyModel_debug_baseline_up, self).__init__()
-        self.name = "MyModel_debug_other_up_{}_{}".format(nf, nb)
+        self.name = "MyModel_debug_baseline_up{}_{}".format(nf, nb)
 
         self.bilin_layer = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=False)
         self.first_conv = nn.Conv2d(in_c, nf, 3, 1, 1, bias=bias)
