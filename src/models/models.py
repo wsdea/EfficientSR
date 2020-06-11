@@ -245,3 +245,37 @@ class MyModel_debug_other_up(CustomModule):
         out3 = self.up3(x) + out2
 
         return out3
+
+class MyModel_debug_baseline_up(CustomModule):
+    def __init__(self, in_c=3, out_c=3, nf=64, nb=3, bias=True):
+        super(MyModel_debug_baseline_up, self).__init__()
+        self.name = "MyModel_debug_other_up_{}_{}".format(nf, nb)
+
+        self.bilin_layer = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=False)
+        self.first_conv = nn.Conv2d(in_c, nf, 3, 1, 1, bias=bias)
+        CRC = functools.partial(ConvReluConv, nf=nf)
+        self.block1 = make_layer(CRC, nb)
+        self.block2 = make_layer(CRC, nb)
+        self.block3 = make_layer(CRC, nb)
+        self.up1 = baseline_upscale(nf)
+        self.up2 = baseline_upscale(nf)
+        self.up3 = baseline_upscale(nf)
+
+        # initialization
+        initialize_weights([self.first_conv], 0.1)
+
+    def forward(self, inputs):
+        bilin = self.bilin_layer(inputs)
+
+        x = self.first_conv(inputs) #no relu
+
+        x = self.block1(x)
+        out1 = self.up1(x) + bilin
+
+        x = self.block2(x)
+        out2 = self.up2(x) + out1
+
+        x = self.block3(x)
+        out3 = self.up3(x) + out2
+
+        return out3

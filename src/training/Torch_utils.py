@@ -258,7 +258,6 @@ class DefaultTrainer:
                                                                                val_psnr))
 
 
-            self.scheduler.step(val_loss)
             self.model_checkpoint.update(self.iterations_counter, val_loss, val_psnr)
 
         print('# Iterations : {}'.format(self.iterations_counter))

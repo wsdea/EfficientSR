@@ -15,6 +15,7 @@ from src.models.models         import (
                                       MyModel_debug,
                                       MyModel_debug_other_up,
                                       small_baseline_model,
+                                      MyModel_debug_baseline_up,
                                       )
 #from src.models.SRResNet       import MSRResNet
 from src.dataset.loading       import image_list, im_show
@@ -50,7 +51,8 @@ if __name__ == "__main__":
 #    model_fun = baseline_model
 #    model_fun = FasterMSRResNet
 #    model_fun = small_baseline_model
-    model_fun = MyModel_debug_other_up
+#    model_fun = MyModel_debug_other_up
+    model_fun = MyModel_debug_baseline_up
 
 
     t = Trainer(model_fun, data_folder=data_folder)

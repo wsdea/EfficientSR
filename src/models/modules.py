@@ -156,6 +156,8 @@ class baseline_upscale(nn.Module):
         # upsampling
         self.upconv1 = nn.Conv2d(nf, nf * 4, 3, 1, 1, bias=True)
         self.upconv2 = nn.Conv2d(nf, nf * 4, 3, 1, 1, bias=True)
+        self.HR_conv = nn.Conv2d(nf, nf, 3, 1, 1, bias=True)
+        self.last_conv = nn.Conv2d(nf, 3, 3, 1, 1, bias=True)
         self.pixel_shuffle = nn.PixelShuffle(2)
 
         # activation function
@@ -163,12 +165,16 @@ class baseline_upscale(nn.Module):
 
         # initialization
         initialize_weights([self.upconv1,
-                            self.upconv2], 0.1)
+                            self.upconv2,
+                            self.HR_conv,
+                            self.last_conv], 0.1)
 
 
     def forward(self, x):
         x = self.lrelu(self.pixel_shuffle(self.upconv1(x)))
         x = self.lrelu(self.pixel_shuffle(self.upconv2(x)))
+        x = self.last_conv(self.lrelu(self.HR_conv(x)))
+
         return x
 
 class NearestNeighbourx4(nn.Module):
