@@ -36,7 +36,7 @@ class Trainer(DefaultTrainer):
 
 if __name__ == "__main__":
     data_folder = "data"
-#    data_folder = "D:/ML/SR dataset"
+    data_folder = "D:/ML/SR dataset"
 
     LR_val_folder = data_folder + "/DIV2K/DIV2K_valid_LR_bicubic/X4"
     HR_val_folder = data_folder + "/DIV2K/DIV2K_val_HR"
@@ -52,13 +52,14 @@ if __name__ == "__main__":
 #    model_fun = small_baseline_model
     model_fun = MyModel_debug_other_up
 
+
     t = Trainer(model_fun, data_folder=data_folder)
 
 #    t.model.load_weights(baseline_ckpt)
 
     RETRAIN = 1
     if RETRAIN:
-        n_iterations = 200000
+        n_iterations = 300000
         t.train(n_iterations)
 
     else:

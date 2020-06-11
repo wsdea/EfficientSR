@@ -49,12 +49,13 @@ class DefaultTrainer:
                  lr=2e-4,
                  batch_size=16,
                  iterations_step=1000,
-                 lr_lambda=None,
+                 drop_lr_iterations=50000,
                  data_folder="data"):
         self.tqdm = None
         self.R = 4
         self.batch_size = batch_size
         self.data_folder = data_folder
+        self.drop_lr_iterations = drop_lr_iterations
 
         # dataset
         self.set_crop_size(48)
@@ -86,17 +87,15 @@ class DefaultTrainer:
         # optimizer
         self.lr = lr
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.lr)
-        if lr_lambda is None:
-            self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer = self.optimizer,
-                                                                        factor    = 0.5,
-                                                                        patience  = 10,
-                                                                        threshold_mode = 'abs',
-                                                                        min_lr    = 1e-7,
-                                                                        eps       = 1e-5,
-                                                                        verbose   = True,
-                                                                        mode      = 'min')
-        else:
-            self.scheduler = torch.optim.lr_scheduler.LambdaLR(self.optimizer, lr_lambda)
+#        self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer = self.optimizer,
+#                                                                    factor    = 0.5,
+#                                                                    patience  = 10,
+#                                                                    threshold_mode = 'abs',
+#                                                                    min_lr    = 1e-7,
+#                                                                    eps       = 1e-5,
+#                                                                    verbose   = True,
+#                                                                    mode      = 'min')
+        self.scheduler = torch.optim.lr_scheduler.MultiplicativeLR(self.optimizer, lambda x : 0.5)
 
         self.logdir = None
 
@@ -167,8 +166,9 @@ class DefaultTrainer:
             self.optimizer.step()
             self.iterations_counter += 1
 
-#            if self.iterations_counter >= old_iteration_counter + self.iterations_step:
-#                break
+            if self.iterations_counter % self.drop_lr_iterations == 0:
+                print('Reducing lr')
+                self.scheduler.step()
 
         return loss_sum / N,  np.mean(PSNR_list)
 
