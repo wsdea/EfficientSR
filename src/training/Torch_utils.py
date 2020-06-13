@@ -54,12 +54,15 @@ class DefaultTrainer:
         self.tqdm = None
         self.R = 4
         self.batch_size = batch_size
-        self.data_folder = data_folder
+        if os.path.exists(data_folder):
+            self.data_folder = data_folder
+        else:
+            self.data_folder = "D:/ML/SR dataset"
         self.drop_lr_iterations = drop_lr_iterations
 
         # dataset
         self.set_crop_size(48)
-        self.val_dataset   = ValDataset(self.data_folder)
+        self.val_dataset = ValDataset(self.data_folder)
 
         self.set_loading_threads(1)
 

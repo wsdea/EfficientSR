@@ -16,6 +16,7 @@ from src.models.models         import (
                                       MyModel_debug_other_up,
                                       small_baseline_model,
                                       MyModel_debug_baseline_up,
+                                      extended_baseline_model,
                                       )
 #from src.models.SRResNet       import MSRResNet
 from src.dataset.loading       import image_list, im_show
@@ -36,26 +37,25 @@ class Trainer(DefaultTrainer):
  ############################################################################################ Datasets
 
 if __name__ == "__main__":
-    data_folder = "data"
-    data_folder = "D:/ML/SR dataset"
+    model_fun = extended_baseline_model
 
-    LR_val_folder = data_folder + "/DIV2K/DIV2K_valid_LR_bicubic/X4"
-    HR_val_folder = data_folder + "/DIV2K/DIV2K_val_HR"
+
+    t = Trainer(model_fun)
+
+    LR_val_folder = t.data_folder + "/DIV2K/DIV2K_valid_LR_bicubic/X4"
+    HR_val_folder = t.data_folder + "/DIV2K/DIV2K_val_HR"
 
 
     baseline_ckpt = os.path.join('Challenge files',
                                  'MSRResNet',
                                  'MSRResNetx4_model',
                                  'MSRResNetx4.pth')
-
 #    model_fun = baseline_model
 #    model_fun = FasterMSRResNet
 #    model_fun = small_baseline_model
 #    model_fun = MyModel_debug_other_up
-    model_fun = MyModel_debug_baseline_up
+#    model_fun = MyModel_debug_baseline_up
 
-
-    t = Trainer(model_fun, data_folder=data_folder)
 
 #    t.model.load_weights(baseline_ckpt)
 

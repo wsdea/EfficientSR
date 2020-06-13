@@ -142,6 +142,10 @@ class debug_ESRGAN(RRDBNet, CustomModule):
     def __init__(self):
         super(debug_ESRGAN, self).__init__(3, 3, 16, 1, gc=8)
 
+class extended_baseline_model(MSRResNet, CustomModule):
+    def __init__(self):
+        self.name = "ExtentedBaseline"
+        super().__init__(in_nc=3, out_nc=3, nf=32, nb=27, upscale=4)
 
 class small_baseline_model(MSRResNet, CustomModule):
     def __init__(self):
